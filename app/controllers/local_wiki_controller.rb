@@ -16,7 +16,6 @@ class LocalWikiController < ApplicationController
             :data => data,
             :status => :ok,
             :coords => coords,
-            :data => data,
         }
   end
 
