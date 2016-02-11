@@ -218,7 +218,7 @@ DEPENDENCIES
   guard
   guard-minitest (= 2.3.1)
   haml (= 4.0.7)
-  httpclient
+  httpclient (= 2.7.1)
   jbuilder (= 2.2.3)
   jquery-rails (= 4.0.3)
   mini_backtrace (= 0.1.3)
