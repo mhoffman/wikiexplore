@@ -1,0 +1,18 @@
+!!!
+%html
+  %head
+    %title  WikiExplore
+    = stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track' => true
+    = stylesheet_link_tag "http://openlayers.org/en/v3.13.0/css/ol.css"
+    = javascript_include_tag "http://openlayers.org/en/v3.12.0/build/ol.js"
+    = #csrf_meta_tags
+    = render 'layouts/shim'
+  %body
+    = render 'layouts/header'
+    .container
+      - flash.each do |message_type, message|
+        = content_tag(:div, message, class: "alert alert-#{message_type}")
+      = yield
+      = javascript_include_tag 'application', 'data-turbolinks-track' => true
+      = render 'layouts/footer'
+      = debug(params) if Rails.env.development?

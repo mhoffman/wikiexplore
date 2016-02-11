@@ -1,0 +1,2 @@
+module LocalWikiHelper
+end
