@@ -1,5 +1,5 @@
 
-require 'HTTPClient'
+require 'httpclient'
 require 'cgi'
 
 class LocalWikiController < ApplicationController
