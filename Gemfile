@@ -14,7 +14,7 @@ gem 'haml', '4.0.7'
 gem 'faker', '1.4.2'
 gem 'will_paginate', '3.0.7'
 gem 'bootstrap-will_paginate', '0.0.10'
-gem 'httpclient'
+gem 'httpclient', '2.7.1'
 
 
 group :development, :test do
