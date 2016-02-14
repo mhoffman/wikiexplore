@@ -59,7 +59,20 @@ class LocalWikiController < ApplicationController
       }
   end
 
-  def suggestion
+  def suggest
+        coords = params[:coords]
+        lon, lat = coords.split(',')
+        lang = params[:lang]
+
+        client = HTTPClient.new
+        raw_data = client.get_content("https://#{lang}.wikipedia.org/w/api.php?action=query&list=geosearch&gscoord=#{lon}%7C#{lat}&gsradius=10000&gslimit=500&format=json")
+        data = JSON.parse(raw_data)["query"]["geosearch"]
+
+        data.sort_by! {|obj| obj["dist"]}
+
+        render :json => {
+            :suggestion => data[Random.rand(10)]
+        }
 
     # process liked and unliked categories
       # possible preferences

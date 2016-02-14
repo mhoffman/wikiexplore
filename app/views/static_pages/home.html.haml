@@ -18,8 +18,33 @@
       %span.glyphicon.glyphicon-road
         Take me to ...
 
-.class.fade#target_suggestion{:tabindex=>"-1",:role=>"dialog",:"aria-labelledby"=>"target_suggestion_label"}
+.modal.fade#target_suggestion{:tabindex=>"-1",:role=>"dialog",:"aria-labelledby"=>"target_suggestion_label"}
   .modal-dialog{:role=>"document"}
     .modal-content
       .modal-header
-        %button{:type=>"button"}
+        %button{:type=>"button",:class=>"close",:"data-dismiss"=>"modal",:"aria-label"=>"Close"}
+          &times;
+        %h4
+          How about ...
+
+      .modal-body
+        %p
+          Looking for target ...
+
+      .modal-footer
+        .input-group
+          .input-group-btn
+            %button#dontcare.btn.btn-default.btn-md{:type=>"button", }
+              %span.glyphicon.glyphicon-thumbs-down
+                Don't care.
+            %button#beenthere.btn.btn-default.btn-md{:type=>"button", }
+              %span.glyphicon.glyphicon-flag
+                Been there.
+            %button#like.btn.btn-default.btn-md{:type=>"button", }
+              %span.glyphicon.glyphicon-thumbs-up
+                Sounds interesting.
+            %button#go.btn.btn-default.btn-md.btn-primary{:type=>"button", }
+              %span.glyphicon.glyphicon-arrow-right
+                Let's go!
+
+

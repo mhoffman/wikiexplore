@@ -11,6 +11,7 @@ Rails.application.routes.draw do
 
   post 'localwikisearch/' => 'local_wiki#search'
   post 'localwikilookup/' => 'local_wiki#lookup'
+  post 'localwikisuggest/' => 'local_wiki#suggest'
   post 'localwikicategories/' => 'local_wiki#getcategories'
   get 'localwikicategories/' => 'local_wiki#getcategories'
 
