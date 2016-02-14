@@ -19,7 +19,7 @@ class LocalWikiController < ApplicationController
         }
   end
 
- def lookup
+  def lookup
     query = params[:query]
     client = HTTPClient.new
     equery = CGI::escape(query)
@@ -27,7 +27,7 @@ class LocalWikiController < ApplicationController
     data = JSON.parse(raw_data)
     if data.size > 0 then
         first_hit = data[0]
-
+ 
         render :json => {
             :message => "Found something",
             :name => first_hit["display_name"],
@@ -36,7 +36,7 @@ class LocalWikiController < ApplicationController
             :lonlat  => [first_hit["lon"], first_hit["lat"],],
             :first_hit => first_hit,
             :status => 200,
-
+ 
         }
     else
         render :json => {
@@ -44,8 +44,35 @@ class LocalWikiController < ApplicationController
             :status => 404,
         }
     end
+  end
+ 
+  def getcategories
+     lang = params[:lang]
+     query = params[:query]
+     client = HTTPClient.new
+     equery = CGI::escape(query)
+     raw_data = client.get_content("https://#{lang}.wikipedia.org/w/api.php?action=query&titles=#{equery}&prop=categories&format=json&cllimit=500")
+     data = JSON.parse(raw_data)
 
+     render :json => {
+        :data => data,
+      }
+  end
 
+  def suggestion
+
+    # process liked and unliked categories
+      # possible preferences
+        # - notinterested : mark categories as -1, mark location as visited, make new suggestion
+        # - beentheredonethat : mark categories as +1, mark location as visited, make new suggestion
+        # - tellmemore : mark categories as +1, open details window
+        # - letsgo : mark categories as +1, mark as visited, return route
+
+    # fetch new targets
+
+    # rank target on distance on categories preferences
 
   end
+
+
 end

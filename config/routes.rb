@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  devise_for :users, controllers: {registrations: 'registrations'}
   get 'static_pages/about'
 
   get 'static_pages/home'
@@ -10,6 +11,9 @@ Rails.application.routes.draw do
 
   post 'localwikisearch/' => 'local_wiki#search'
   post 'localwikilookup/' => 'local_wiki#lookup'
+  post 'localwikicategories/' => 'local_wiki#getcategories'
+  get 'localwikicategories/' => 'local_wiki#getcategories'
+
 
   root 'static_pages#home'
 
