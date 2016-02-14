@@ -14,6 +14,12 @@
 
 .input_group
   .input-group-btn
-    %button.btn.btn-default.btn-md.btn-primary{:type=>"button"}
+    %button.btn.btn-default.btn-md.btn-primary{:type=>"button", :"data-toggle"=>"modal", :"data-target"=>"#target_suggestion"}
       %span.glyphicon.glyphicon-road
-        Let's explore
+        Take me to ...
+
+.class.fade#target_suggestion{:tabindex=>"-1",:role=>"dialog",:"aria-labelledby"=>"target_suggestion_label"}
+  .modal-dialog{:role=>"document"}
+    .modal-content
+      .modal-header
+        %button{:type=>"button"}
