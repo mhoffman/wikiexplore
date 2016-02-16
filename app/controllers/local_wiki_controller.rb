@@ -12,6 +12,12 @@ end
 
 class LocalWikiController < ApplicationController
   skip_before_filter :verify_authenticity_token
+  def reset_suggestions
+    current_user.propensities.delete_all
+
+    render :json => {}
+  end
+
   def search
         coords = params[:coords]
         lon, lat = coords.split(',')

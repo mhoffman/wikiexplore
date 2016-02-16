@@ -171,6 +171,11 @@ $ ->
           fail: (data, textStatus, jqXHR) ->
               modal.find('.modal-body p').html("Couldn't load suggestion!" + textStatus)
     
+    $("#reset_suggestions").on 'click', (e) ->
+        $.ajax
+            type: 'POST'
+            url: "#{window.location.protocol}//#{window.location.host}/localwikiresetsuggestions"
+
     $("#dontcare").on 'click', (e) ->
         modal = $(document).data('modal')
         pageid = modal.data('pageid')

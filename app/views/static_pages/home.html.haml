@@ -1,5 +1,9 @@
 %form{:id=>"lookup_form",:style=>"display:inline"}
   .input-group
+    .input-group-btn
+      %button.btn.btn-default.btn-md.btn-primary{:type=>"button", :"data-toggle"=>"modal", :"data-target"=>"#target_suggestion"}
+        %span.glyphicon.glyphicon-road
+          Make an educated guess ...
     %input.form-control{:type=>"text", :name=>"query", :placeholder=>"Go to places"} 
     .input-group-btn
       %button.btn.btn-default.btn-md#center-home{:type=>"button"}
@@ -12,11 +16,10 @@
 
 .div{:style=>"height:10px"}
 
-.input_group
-  .input-group-btn
-    %button.btn.btn-default.btn-md.btn-primary{:type=>"button", :"data-toggle"=>"modal", :"data-target"=>"#target_suggestion"}
-      %span.glyphicon.glyphicon-road
-        Make a good guess ...
+.input-group
+  %button.btn.btn-default.btn-md#reset_suggestions{:type=>"button"}
+    %span.glyphicon.glyphicon-remove-sign
+      Reset suggestions
 
 .modal.fade#target_suggestion{:tabindex=>"-1",:role=>"dialog",:"aria-labelledby"=>"target_suggestion_label"}
   .modal-dialog{:role=>"document"}
