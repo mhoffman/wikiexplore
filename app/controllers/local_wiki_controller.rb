@@ -140,13 +140,15 @@ class LocalWikiController < ApplicationController
       image_data = JSON.parse(raw_images)["query"]["pages"].values[0]["images"]
       #debug = image_data
       image_urls = []
-      image_data.each do |image|
-        title = image["title"]
-        fn = title.split(":")[-1].gsub(" ", "_")
-        h = Digest::MD5.hexdigest(fn)
-        image_urls.append(
-            "https://upload.wikimedia.org/wikipedia/commons/#{h[0]}/#{h[0..1]}/#{fn}"
-        )
+      if not image_data.nil? then
+          image_data.each do |image|
+            title = image["title"]
+            fn = title.split(":")[-1].gsub(" ", "_")
+            h = Digest::MD5.hexdigest(fn)
+            image_urls.append(
+                "https://upload.wikimedia.org/wikipedia/commons/#{h[0]}/#{h[0..1]}/#{fn}"
+            )
+          end
       end
 
       suggestion["summary"] = summary
