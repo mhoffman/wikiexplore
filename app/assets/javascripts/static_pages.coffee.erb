@@ -195,7 +195,8 @@ $ ->
         # retrieve directions
         # display directions
         lang = (window.navigator.userLanguage || window.navigator.language).split('-')[0]
-        window.open("http://#{lang}.wikipedia.org/?curid=#{pageid}", '_blank')
+        #window.open("http://#{lang}.wikipedia.org/?curid=#{pageid}", '_blank')
+        modal.find('.modal-body p').html("This button will show direction to the place. Not implemented, yet.")
         console.log("go to #{pageid}")
         console.log(e)
         

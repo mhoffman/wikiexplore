@@ -18,6 +18,7 @@ gem 'will_paginate', '3.0.7'
 gem 'bootstrap-will_paginate', '0.0.10'
 gem 'httpclient', '2.7.1'
 gem 'devise'
+gem 'digest'
 
 
 group :development, :test do
