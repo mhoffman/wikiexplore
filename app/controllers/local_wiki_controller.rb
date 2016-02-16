@@ -128,7 +128,7 @@ class LocalWikiController < ApplicationController
                               ranked_data_item["Category #{category_name["title"]} #{category.id} User #{current_user.id}"] = propensity.value
                               # higher propensity means that the target appear closer
                               # therefore we need a negative sign here
-                              ranked_data_item["ranked_dist"] += - propensity.value * 500
+                              ranked_data_item["ranked_dist"] += - propensity.value * 1500
                           else
                               ranked_data_item["propensity"] = "nil"
                           end
