@@ -2,8 +2,7 @@
 # All this logic will automatically be available in application.js.
 # You can use CoffeeScript in this file: http://coffeescript.org/
 $ ->
-
-    zoom = 12
+    zoom = 13
     center = ol.proj.fromLonLat([-122.18333, 37.452778])
     #console.log(center)
     rotation = 0
@@ -60,7 +59,7 @@ $ ->
                         url = "http://#{lang}.wikipedia.org/?curid=#{wiki_entry.pageid}"
                         overlay = new ol.Overlay
                             position: center
-                            element: $("<p style=\"max-width:80px; word-wrap:break-word; line-height:80%; background-color:white;font-size:8pt;\"><a target=\"_new\" href=\"#{url}\" style=''>#{wiki_entry.title}</a></p>")[0]
+                            element: $("<div style=\"background-color:rgba(.1, .1, .1, .5);opacity:.6;\"><p style=\"max-width:80px; word-wrap:break-word; line-height:80%; font-size:8pt; \"><a target=\"_new\" href=\"#{url}\" style=''>#{wiki_entry.title}</a></p></div>")[0]
 
                         map.addOverlay(overlay)
 
@@ -200,6 +199,19 @@ $ ->
         console.log("go to #{pageid}")
         console.log(e)
         
+    $('#bookmark').on 'click', (e) ->
+        modal = $(document).data('modal')
+        pageid = modal.data('pageid')
+        vote(pageid, +1)
+        # ajax call to upvote
+        # retrieve directions
+        # display directions
+        lang = (window.navigator.userLanguage || window.navigator.language).split('-')[0]
+        #window.open("http://#{lang}.wikipedia.org/?curid=#{pageid}", '_blank')
+        modal.find('.modal-body p').html("This button will show direction to the place. Not implemented, yet.")
+        console.log("go to #{pageid}")
+        console.log(e)
+        
 
     show_spinner = (obj) ->
         obj.html("<span id='load_indicator'><img src=\"<%= asset_path('spinner.gif') %>\"></span>")
@@ -218,6 +230,7 @@ $ ->
                 console.log("Vote LOG")
                 console.log(data)
 
+    $("#center-home").click()
     # keep it around for debugging
     $(document).data('view', view)
     $(document).data('map', map)
