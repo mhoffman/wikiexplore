@@ -1,7 +1,7 @@
 
 require 'httpclient'
 require 'cgi'
-require 'Digest'
+require 'digest'
 
 class String
   def is_integer?
