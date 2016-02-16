@@ -16,7 +16,7 @@
   .input-group-btn
     %button.btn.btn-default.btn-md.btn-primary{:type=>"button", :"data-toggle"=>"modal", :"data-target"=>"#target_suggestion"}
       %span.glyphicon.glyphicon-road
-        Take me to ...
+        Make a good guess ...
 
 .modal.fade#target_suggestion{:tabindex=>"-1",:role=>"dialog",:"aria-labelledby"=>"target_suggestion_label"}
   .modal-dialog{:role=>"document"}
@@ -25,15 +25,17 @@
         %button{:type=>"button",:class=>"close",:"data-dismiss"=>"modal",:"aria-label"=>"Close"}
           &times;
         %h4
-          How about ...
+          %span#modal_body_top
+            How about ...
 
       .modal-body
+
         %p
           Looking for target ...
 
       .modal-footer
         .input-group
-          .input-group-btn
+          .input-group-btn.vote_buttons
             %button#dontcare.btn.btn-default.btn-md{:type=>"button", }
               %span.glyphicon.glyphicon-thumbs-down
                 Don't care.
@@ -43,10 +45,6 @@
             %button#like.btn.btn-default.btn-md{:type=>"button", }
               %span.glyphicon.glyphicon-arrow-down
                 Full info.
-            %button#bookmark.btn.btn-default.btn-md{:type=>"button", }
-              %span.glyphicon.glyphicon-bookmark
             %button#go.btn.btn-default.btn-md.btn-primary{:type=>"button", }
               %span.glyphicon.glyphicon-map-marker
                 Directions.
-
-

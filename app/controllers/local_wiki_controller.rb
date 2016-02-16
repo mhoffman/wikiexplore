@@ -81,74 +81,81 @@ class LocalWikiController < ApplicationController
       lon, lat = coords.split(',')
       lang = params[:lang]
       skip = params[:skip].to_i
+      pageid = params[:pageid].to_i
 
-      client = HTTPClient.new
-      raw_data = client.get_content("https://#{lang}.wikipedia.org/w/api.php?action=query&list=geosearch&gscoord=#{lon}%7C#{lat}&gsradius=10000&gslimit=500&format=json")
-      data = JSON.parse(raw_data)["query"]["geosearch"][0..49]
+      if pageid == 0 then
+          client = HTTPClient.new
+          raw_data = client.get_content("https://#{lang}.wikipedia.org/w/api.php?action=query&list=geosearch&gscoord=#{lon}%7C#{lat}&gsradius=10000&gslimit=500&format=json")
+          data = JSON.parse(raw_data)["query"]["geosearch"][0..49]
 
-      pdata = {}
-      data.each do |x|
-        pdata[x["pageid"]] = x
-      end
+          pdata = {}
+          data.each do |x|
+            pdata[x["pageid"]] = x
+          end
 
-      debug = data.collect{|x| x["pageid"]}.join("|")
-      pageids = CGI::escape(data.collect{|x| x["pageid"]}.join("|"))
-      
-      categories = JSON.parse(
-          client.get_content("https://#{lang}.wikipedia.org/w/api.php?action=query&pageids=#{pageids}&prop=categories&format=json&cllimit=5000")
-      )["query"]["pages"]
+          debug = data.collect{|x| x["pageid"]}.join("|")
+          pageids = CGI::escape(data.collect{|x| x["pageid"]}.join("|"))
+          
+          categories = JSON.parse(
+              client.get_content("https://#{lang}.wikipedia.org/w/api.php?action=query&pageids=#{pageids}&prop=categories&format=json&cllimit=5000")
+          )["query"]["pages"]
 
-      ranked_data = []
-      pdata.each do |pageid, page|
-          ranked_data_item = page
-          ranked_data_item["ranked_dist"] = ranked_data_item["dist"]
-          ranked_data.append(ranked_data_item)
+          ranked_data = []
+          pdata.each do |pageid, page|
+              ranked_data_item = page
+              ranked_data_item["ranked_dist"] = ranked_data_item["dist"]
+              ranked_data.append(ranked_data_item)
 
-          category_list = categories[pageid.to_s]
-          if not category_list["categories"].nil? then
-              category_list["categories"].each do |category_name|
-                  ranked_data_item["debug"] = category_name["title"]
-                  category = Category.find_by(:name=>category_name["title"])
-                  if not category.nil? then
-                      ranked_data_item[category.name] = category.id
-                      propensity = Propensity.find_by(:category_id=>category.id, :user_id=>current_user.id)
-                      if not propensity.nil? then
-                          ranked_data_item["Category #{category_name["title"]} #{category.id} User #{current_user.id}"] = propensity.value
-                          # higher propensity means that the target appear closer
-                          # therefore we need a negative sign here
-                          ranked_data_item["ranked_dist"] += - propensity.value * 300
-                      else
-                          ranked_data_item["propensity"] = "nil"
+              category_list = categories[pageid.to_s]
+              if not category_list["categories"].nil? then
+                  category_list["categories"].each do |category_name|
+                      ranked_data_item["debug"] = category_name["title"]
+                      category = Category.find_by(:name=>category_name["title"])
+                      if not category.nil? then
+                          ranked_data_item[category.name] = category.id
+                          propensity = Propensity.find_by(:category_id=>category.id, :user_id=>current_user.id)
+                          if not propensity.nil? then
+                              ranked_data_item["Category #{category_name["title"]} #{category.id} User #{current_user.id}"] = propensity.value
+                              # higher propensity means that the target appear closer
+                              # therefore we need a negative sign here
+                              ranked_data_item["ranked_dist"] += - propensity.value * 100
+                          else
+                              ranked_data_item["propensity"] = "nil"
+                          end
                       end
                   end
               end
           end
-      end
 
-      ranked_data.sort_by! {|obj| obj["ranked_dist"]}
+          ranked_data.sort_by! {|obj| obj["ranked_dist"]}
 
+          suggestion = ranked_data[skip]
+          pageid = suggestion["pageid"]
 
-      suggestion = ranked_data[skip]
+          # retrieve a summary
+          raw_summary = client.get_content("https://#{lang}.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&pageids=#{pageid}")
+          summary = JSON.parse(raw_summary)["query"]["pages"].values[0]["extract"]
 
-      pageid = suggestion["pageid"]
-      # retrieve a summary
-      raw_summary = client.get_content("https://#{lang}.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&pageids=#{pageid}")
-      summary = JSON.parse(raw_summary)["query"]["pages"].values[0]["extract"]
-
-      # retrieve image URLs
-      raw_images = client.get_content("https://#{lang}.wikipedia.org/w/api.php?action=query&pageids=#{pageid}&prop=images&format=json&cllimit=500")
-      image_data = JSON.parse(raw_images)["query"]["pages"].values[0]["images"]
-      #debug = image_data
-      image_urls = []
-      if not image_data.nil? then
-          image_data.each do |image|
-            title = image["title"]
-            fn = title.split(":")[-1].gsub(" ", "_")
-            h = Digest::MD5.hexdigest(fn)
-            image_urls.append(
-                "https://upload.wikimedia.org/wikipedia/commons/#{h[0]}/#{h[0..1]}/#{fn}"
-            )
+          # retrieve image URLs
+          raw_images = client.get_content("https://#{lang}.wikipedia.org/w/api.php?action=query&pageids=#{pageid}&prop=images&format=json&cllimit=500")
+          image_data = JSON.parse(raw_images)["query"]["pages"].values[0]["images"]
+          #debug = image_data
+          image_urls = []
+          if not image_data.nil? then
+              image_data.each do |image|
+                title = image["title"]
+                fn = title.split(":")[-1].gsub(" ", "_")
+                h = Digest::MD5.hexdigest(fn)
+                image_urls.append(
+                    "https://upload.wikimedia.org/wikipedia/commons/#{h[0]}/#{h[0..1]}/#{fn}"
+                )
+              end
           end
+      else
+          suggestion = {}
+          ranked_data = nil
+          summary = get_summary(pageid, lang)
+          image_urls = get_image_urls(pageid, lang)
       end
 
       suggestion["summary"] = summary
@@ -209,6 +216,36 @@ class LocalWikiController < ApplicationController
      :debug => debug_data,
     }
 
+  end
+
+  private
+
+  def get_summary(pageid, lang)
+      # retrieve a summary
+      client = HTTPClient.new
+      raw_summary = client.get_content("https://#{lang}.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&pageids=#{pageid}")
+      summary = JSON.parse(raw_summary)["query"]["pages"].values[0]["extract"]
+      return summary
+  end
+
+  def get_image_urls(pageid, lang)
+      # retrieve image URLs
+      client = HTTPClient.new
+      raw_images = client.get_content("https://#{lang}.wikipedia.org/w/api.php?action=query&pageids=#{pageid}&prop=images&format=json&cllimit=500")
+      image_data = JSON.parse(raw_images)["query"]["pages"].values[0]["images"]
+      #debug = image_data
+      image_urls = []
+      if not image_data.nil? then
+          image_data.each do |image|
+            title = image["title"]
+            fn = title.split(":")[-1].gsub(" ", "_")
+            h = Digest::MD5.hexdigest(fn)
+            image_urls.append(
+                "https://upload.wikimedia.org/wikipedia/commons/#{h[0]}/#{h[0..1]}/#{fn}"
+            )
+          end
+      end
+      return image_urls
   end
 
 

@@ -57,9 +57,18 @@ $ ->
                         lang = lang.split('-')[0]
                         #console.log(lang)
                         url = "http://#{lang}.wikipedia.org/?curid=#{wiki_entry.pageid}"
+                        element = $("<div style=\"background-color:rgba(.1, .1, .1, .5);opacity:.6;\"><p style=\"max-width:80px; word-wrap:break-word; line-height:80%; font-size:8pt; \"><a class=\"map-link\" target=\"_new\" href=\"#\" style='' data-pageid=\"#{wiki_entry.pageid}\">#{wiki_entry.title}</a></p></div>")
                         overlay = new ol.Overlay
                             position: center
-                            element: $("<div style=\"background-color:rgba(.1, .1, .1, .5);opacity:.6;\"><p style=\"max-width:80px; word-wrap:break-word; line-height:80%; font-size:8pt; \"><a target=\"_new\" href=\"#{url}\" style=''>#{wiki_entry.title}</a></p></div>")[0]
+                            stopEvent: true
+                            element: element[0]
+                        element.on "click", (e)  ->
+                            pageid = e["toElement"]["dataset"]["pageid"]
+                            $(document).data('modal_pageid', pageid)
+                            console.log(pageid)
+                            vote(pageid, +1)
+                            e.preventDefault()
+                            $("#target_suggestion").modal("show")
 
                         map.addOverlay(overlay)
 
@@ -84,8 +93,6 @@ $ ->
         map.getView().setRotation(event.state.rotation)
         shouldUpdate = false
 
-
-    
     $("#center-home").on 'click', (e) ->
         center_navigator = (position) ->
             center = ol.proj.fromLonLat([position.coords.longitude, position.coords.latitude])
@@ -127,6 +134,12 @@ $ ->
       $(document).data('modal', modal)
       coords = ol.proj.toLonLat(view.getCenter())
       show_spinner(modal.find('.modal-body p'))
+
+      if parseInt($(document).data('modal_pageid')) > 0
+        pageid = $(document).data('modal_pageid')
+        $(document).removeData("modal_pageid")
+      else
+        pageid = 0
       $.ajax
           type: 'POST'
           url: "#{window.location.protocol}//#{window.location.host}/localwikisuggest"
@@ -134,12 +147,14 @@ $ ->
               coords: "#{coords[1]},#{coords[0]}"
               lang: (window.navigator.userLanguage || window.navigator.language).split('-')[0]
               skip: modal.data('skip')
+              pageid: pageid
           success: (data, textStatus, jqXHR) ->
               #$("#load_indicator").remove()
               name = data["suggestion"]["title"]
               summary = data["suggestion"]["summary"]
               distance = data["suggestion"]["dist"]
               modal.data("pageid", data["suggestion"]["pageid"])
+              #modal.find('.modal-header').html($(".vote_buttons"))
               modal.find('.modal-body p').html("<span id='modal_images'></span><h4 <em>#{name}</em>, distance #{distance} m.</h4>
                                                 <p>#{summary}</p>")
               image_html = ""
@@ -151,8 +166,6 @@ $ ->
               console.log(data)
           fail: (data, textStatus, jqXHR) ->
               modal.find('.modal-body p').html("Couldn't load suggestion!" + textStatus)
-
-
     
     $("#dontcare").on 'click', (e) ->
         modal = $(document).data('modal')
