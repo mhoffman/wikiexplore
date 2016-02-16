@@ -108,14 +108,15 @@ $ ->
             data: $("#lookup_form").serialize()
 
             success : (data) ->
-                #console.log("Received #{data}")
+                console.log("Received #{data}")
+                console.log(data)
                 center = [parseFloat(data["lonlat"][0]), parseFloat(data["lonlat"][1])]
                 #console.log(data["lonlat"])
                 #console.log(center)
                 center = ol.proj.fromLonLat(center)
                 #console.log("At OL #{center}")
                 map.getView().setCenter(center)
-                map.getView().setZoom("12")
+                map.getView().setZoom("14")
 
             fail:
                 console.log("Something went wrong!")
@@ -150,22 +151,27 @@ $ ->
               pageid: pageid
           success: (data, textStatus, jqXHR) ->
               #$("#load_indicator").remove()
-              name = data["suggestion"]["title"]
-              summary = data["suggestion"]["summary"]
-              if "dist" in data["suggestion"]
-                distance = ", distance #{data["suggestion"]["dist"]} m"
-              else
-                distance = " "
+              if data["message"] == 'success'
+                  name = data["suggestion"]["title"]
+                  summary = data["suggestion"]["summary"]
+                  if "dist" of data["suggestion"]
+                    distance = ", distance #{data["suggestion"]["dist"]} m"
+                  else
+                    distance = " "
 
-              modal.data("pageid", data["suggestion"]["pageid"])
-              #modal.find('.modal-header').html($(".vote_buttons"))
-              modal.find('.modal-body p').html("<span id='modal_images'></span><h4 <em>#{name}</em>#{distance}</h4>
-                                                <p>#{summary}</p>")
-              image_html = ""
-              for image_url in data["image_urls"]
-                if not image_url.endsWith('.svg')
-                    image_html += "<img height='120pt' src='#{image_url}'/>"
-              $("#modal_images").html(image_html)
+                  modal.data("pageid", data["suggestion"]["pageid"])
+                  #modal.find('.modal-header').html($(".vote_buttons"))
+                  modal.find('.modal-body p').html("<span id='modal_images'></span><h4 <em>#{name}</em>#{distance}</h4>
+                                                    <p>#{summary}</p>")
+                  image_html = ""
+                  for image_url in data["image_urls"]
+                    if not image_url.endsWith('.svg')
+                        image_html += "<img height='120pt' src='#{image_url}'/>"
+                  $("#modal_images").html(image_html)
+              else
+                  modal.find('.modal-body p').html("<p>#{data["message"]}</p>")
+                  
+                    
 
               console.log(data)
           fail: (data, textStatus, jqXHR) ->

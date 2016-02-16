@@ -13,7 +13,8 @@ end
 class LocalWikiController < ApplicationController
   skip_before_filter :verify_authenticity_token
   def reset_suggestions
-    current_user.propensities.delete_all
+    current_user.propensities.delete_all()
+    current_user.disliked_articles.delete_all()
 
     render :json => {}
   end
@@ -37,7 +38,8 @@ class LocalWikiController < ApplicationController
     query = params[:query]
     client = HTTPClient.new
     equery = CGI::escape(query)
-    raw_data = client.get_content("http://nominatim.openstreetmap.org/search/#{CGI::escape query}?format=json&polygon=0&addressdetails=1")
+    query = query.gsub(" ", "+")
+    raw_data = client.get_content("http://nominatim.openstreetmap.org/search?q=#{query}&format=json&polygon=0&addressdetails=1")
     data = JSON.parse(raw_data)
     if data.size > 0 then
         first_hit = data[0]
@@ -55,7 +57,9 @@ class LocalWikiController < ApplicationController
     else
         render :json => {
             :message => "Oh, nothing found.",
+            :data=>data,
             :status => 404,
+            :query => query,
         }
     end
   end
@@ -124,7 +128,7 @@ class LocalWikiController < ApplicationController
                               ranked_data_item["Category #{category_name["title"]} #{category.id} User #{current_user.id}"] = propensity.value
                               # higher propensity means that the target appear closer
                               # therefore we need a negative sign here
-                              ranked_data_item["ranked_dist"] += - propensity.value * 100
+                              ranked_data_item["ranked_dist"] += - propensity.value * 500
                           else
                               ranked_data_item["propensity"] = "nil"
                           end
@@ -133,9 +137,18 @@ class LocalWikiController < ApplicationController
               end
           end
 
-          ranked_data.sort_by! {|obj| obj["ranked_dist"]}
+          dla = ArticleDislike.where(:user_id=>current_user.id)
+          disliked_articles = ArticleDislike.where(:user_id=>current_user.id).map{|x| x.article_id}
+
+          ranked_data = ranked_data.select{|x| disliked_articles.exclude?(x["pageid"])}
+          ranked_data.sort_by {|obj| obj["ranked_dist"]}
 
           suggestion = ranked_data[skip]
+          if suggestion.nil? then
+            render :json => {
+                :message => "Failed to find good location nearby. Change center of map and try again." 
+            } and return
+          end
           pageid = suggestion["pageid"]
 
           # retrieve a summary
@@ -166,12 +179,14 @@ class LocalWikiController < ApplicationController
           summary = get_summary(pageid, lang)
           image_urls = get_image_urls(pageid, lang)
           suggestion["title"] = info["title"]
+          disliked_articles = nil
       end
 
       suggestion["summary"] = summary
       suggestion["info"] = info
 
       render :json => {
+          :message => 'success',
           :pageid => pageid,
           :suggestion => suggestion,
           :ranked_data => ranked_data,
@@ -198,6 +213,10 @@ class LocalWikiController < ApplicationController
     score = params[:score].to_i
     pageid = params[:pageid]
     lang = params[:lang]
+
+    if score < 0 then
+      ArticleDislike.find_or_create_by(:user_id=>current_user.id, :article_id=>pageid)
+    end
 
     # fetch all categories for page
     client = HTTPClient.new
