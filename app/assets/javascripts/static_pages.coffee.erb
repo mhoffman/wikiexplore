@@ -152,10 +152,14 @@ $ ->
               #$("#load_indicator").remove()
               name = data["suggestion"]["title"]
               summary = data["suggestion"]["summary"]
-              distance = data["suggestion"]["dist"]
+              if "dist" in data["suggestion"]
+                distance = ", distance #{data["suggestion"]["dist"]} m"
+              else
+                distance = " "
+
               modal.data("pageid", data["suggestion"]["pageid"])
               #modal.find('.modal-header').html($(".vote_buttons"))
-              modal.find('.modal-body p').html("<span id='modal_images'></span><h4 <em>#{name}</em>, distance #{distance} m.</h4>
+              modal.find('.modal-body p').html("<span id='modal_images'></span><h4 <em>#{name}</em>#{distance}</h4>
                                                 <p>#{summary}</p>")
               image_html = ""
               for image_url in data["image_urls"]

@@ -151,14 +151,19 @@ class LocalWikiController < ApplicationController
                 )
               end
           end
+         info = nil
       else
           suggestion = {}
+          info = get_info(pageid, lang)
+          #suggestion["info"] = info
           ranked_data = nil
           summary = get_summary(pageid, lang)
           image_urls = get_image_urls(pageid, lang)
+          suggestion["title"] = info["title"]
       end
 
       suggestion["summary"] = summary
+      suggestion["info"] = info
 
       render :json => {
           :pageid => pageid,
@@ -219,6 +224,11 @@ class LocalWikiController < ApplicationController
   end
 
   private
+
+  def get_info(pageid, lang)
+      client = HTTPClient.new
+      return JSON.parse(client.get_content("https://#{lang}.wikipedia.org/w/api.php?action=query&pageids=#{pageid}&prop=info&format=json"))["query"]["pages"].values[0]
+  end
 
   def get_summary(pageid, lang)
       # retrieve a summary
