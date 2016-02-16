@@ -15,6 +15,8 @@ Rails.application.routes.draw do
   post 'localwikicategories/' => 'local_wiki#getcategories'
   get 'localwikicategories/' => 'local_wiki#getcategories'
 
+  post 'localwikivote/' => 'local_wiki#vote'
+
 
   root 'static_pages#home'
 

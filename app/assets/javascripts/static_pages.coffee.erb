@@ -119,19 +119,36 @@ $ ->
       #// If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
       #// Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
       modal = $(@)
+      console.log("LOG SKIP")
+      console.log(modal.data('skip'))
+      console.log(modal.data('skip')?)
+      if ! modal.data('skip')?
+        modal.data('skip', 0)
+      console.log(modal.data('skip'))
       $(document).data('modal', modal)
       coords = ol.proj.toLonLat(view.getCenter())
+      show_spinner(modal.find('.modal-body p'))
       $.ajax
           type: 'POST'
           url: "#{window.location.protocol}//#{window.location.host}/localwikisuggest"
           data:
               coords: "#{coords[1]},#{coords[0]}"
               lang: (window.navigator.userLanguage || window.navigator.language).split('-')[0]
+              skip: modal.data('skip')
           success: (data, textStatus, jqXHR) ->
+              #$("#load_indicator").remove()
               name = data["suggestion"]["title"]
+              summary = data["suggestion"]["summary"]
               distance = data["suggestion"]["dist"]
               modal.data("pageid", data["suggestion"]["pageid"])
-              modal.find('.modal-body p').html("#{name}, distance #{distance} yd.")
+              modal.find('.modal-body p').html("<span id='modal_images'></span><h4 <em>#{name}</em>, distance #{distance} m.</h4>
+                                                <p>#{summary}</p>")
+              image_html = ""
+              for image_url in data["image_urls"]
+                if not image_url.endsWith('.svg')
+                    image_html += "<img height='120pt' src='#{image_url}'/>"
+              $("#modal_images").html(image_html)
+
               console.log(data)
           fail: (data, textStatus, jqXHR) ->
               modal.find('.modal-body p').html("Couldn't load suggestion!" + textStatus)
@@ -141,24 +158,30 @@ $ ->
     $("#dontcare").on 'click', (e) ->
         modal = $(document).data('modal')
         pageid = modal.data('pageid')
+        vote(pageid, -1)
         # ajax call to downvote
         $("#target_suggestion").modal("show")
         console.log("dontcare #{pageid}")
         console.log(e)
         
-    $("#beenthere").on 'click', (e) ->
+    $("#morelikethat").on 'click', (e) ->
         modal = $(document).data('modal')
         pageid = modal.data('pageid')
         # ajax call to upvote
+        console.log(modal.data('skip'))
+        modal.data('skip', modal.data('skip') + 1)
+        console.log(modal.data('skip'))
+        vote(pageid, +1)
         # close suggestion
         # open new suggestion
         $("#target_suggestion").modal("show")
-        console.log("beenthere #{pageid}")
+        console.log("morelikethat #{pageid}")
         console.log(e)
         
     $("#like").on 'click', (e) ->
         modal = $(document).data('modal')
         pageid = modal.data('pageid')
+        vote(pageid, +1)
         console.log("like #{pageid}")
         lang = (window.navigator.userLanguage || window.navigator.language).split('-')[0]
         window.open("http://#{lang}.wikipedia.org/?curid=#{pageid}", '_blank')
@@ -167,6 +190,7 @@ $ ->
     $('#go').on 'click', (e) ->
         modal = $(document).data('modal')
         pageid = modal.data('pageid')
+        vote(pageid, +1)
         # ajax call to upvote
         # retrieve directions
         # display directions
@@ -175,6 +199,23 @@ $ ->
         console.log("go to #{pageid}")
         console.log(e)
         
+
+    show_spinner = (obj) ->
+        obj.html("<span id='load_indicator'><img src=\"<%= asset_path('spinner.gif') %>\"></span>")
+
+    vote = (pageid, score) ->
+        console.log("#{pageid} => #{score}")
+        $.ajax
+            type: 'POST'
+            url: "#{window.location.protocol}//#{window.location.host}/localwikivote"
+            data:
+                pageid: pageid
+                score: score
+                lang: (window.navigator.userLanguage || window.navigator.language).split('-')[0]
+
+            success: (data, textStatus, jqXHR) ->
+                console.log("Vote LOG")
+                console.log(data)
 
     # keep it around for debugging
     $(document).data('view', view)
