@@ -114,6 +114,7 @@ class LocalWikiController < ApplicationController
           pdata.each do |pageid, page|
               ranked_data_item = page
               ranked_data_item["ranked_dist"] = ranked_data_item["dist"]
+              ranked_data_item["propensity"] = 0
               ranked_data.append(ranked_data_item)
 
               category_list = categories[pageid.to_s]
@@ -128,9 +129,10 @@ class LocalWikiController < ApplicationController
                               ranked_data_item["Category #{category_name["title"]} #{category.id} User #{current_user.id}"] = propensity.value
                               # higher propensity means that the target appear closer
                               # therefore we need a negative sign here
-                              ranked_data_item["ranked_dist"] += - propensity.value * 1500
+                              ranked_data_item["ranked_dist"] += - propensity.value * 500
+                              ranked_data_item["propensity"] +=  propensity.value
                           else
-                              ranked_data_item["propensity"] = "nil"
+                              #ranked_data_item["propensity"] = "nil"
                           end
                       end
                   end
@@ -141,9 +143,10 @@ class LocalWikiController < ApplicationController
           disliked_articles = ArticleDislike.where(:user_id=>current_user.id).map{|x| x.article_id}
 
           ranked_data = ranked_data.select{|x| disliked_articles.exclude?(x["pageid"])}
-          ranked_data.sort_by {|obj| obj["ranked_dist"]}
+          ranked_data = ranked_data.sort_by {|obj| obj["ranked_dist"]}
 
           suggestion = ranked_data[skip]
+          top5 = ranked_data[skip..skip+9]
           if suggestion.nil? then
             render :json => {
                 :message => "Failed to find good location nearby. Change center of map and try again." 
@@ -172,6 +175,7 @@ class LocalWikiController < ApplicationController
           end
          info = nil
       else
+          top5 = nil
           suggestion = {}
           info = get_info(pageid, lang)
           #suggestion["info"] = info
@@ -194,6 +198,7 @@ class LocalWikiController < ApplicationController
           :image_urls => image_urls,
           :skip => skip,
           :debug => debug,
+          :top5 => top5,
       }
 
       # process liked and unliked categories

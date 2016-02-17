@@ -152,22 +152,54 @@ $ ->
           success: (data, textStatus, jqXHR) ->
               #$("#load_indicator").remove()
               if data["message"] == 'success'
-                  name = data["suggestion"]["title"]
-                  summary = data["suggestion"]["summary"]
-                  if "dist" of data["suggestion"]
-                    distance = ", distance #{data["suggestion"]["dist"]} m"
-                  else
-                    distance = " "
+                  if data["top5"] != null
+                      list = $("<ul class='list-group'>")
+                      listed_ids = []
+                      for top in data["top5"]
+                        list_elem = $("<li class='list-group-item'><a class=\"topx_link\" href=\"#\" data-aboveitems=\"[#{listed_ids}]\" data-pageid=\"#{top["pageid"]}\">#{top["title"]}</a></li>")
+                        console.log(listed_ids)
+                        list.append(list_elem)
+                        #if "ranked_dist" of top
+                            #list_elem.append($("<span class='badge'>#{top["ranked_dist"]}</span>"))
+                        if "propensity" of top
+                            list_elem.append($("<span class='badge'>#{top["propensity"]}</span>"))
+                        list_elem.on 'click', (e) ->
+                            pageid = e["toElement"]["dataset"]["pageid"]
+                            $(document).data('modal_pageid', pageid)
+                            ignored_pageids = eval(e["toElement"]["dataset"]["aboveitems"])
+                            vote(pageid, +3)
+                            console.log("Upvoted #{pageid}")
 
-                  modal.data("pageid", data["suggestion"]["pageid"])
-                  #modal.find('.modal-header').html($(".vote_buttons"))
-                  modal.find('.modal-body p').html("<span id='modal_images'></span><h4 <em>#{name}</em>#{distance}</h4>
-                                                    <p>#{summary}</p>")
-                  image_html = ""
-                  for image_url in data["image_urls"]
-                    if not image_url.endsWith('.svg')
-                        image_html += "<img height='120pt' src='#{image_url}'/>"
-                  $("#modal_images").html(image_html)
+                            console.log("Skip items")
+                            console.log(ignored_pageids)
+                            for ignored_pageid in ignored_pageids
+                                vote(ignored_pageid, -1)
+                                console.log("Downvoted #{ignored_pageid}")
+                            e.preventDefault()
+                            $("#target_suggestion").modal("show")
+
+                            
+                        listed_ids.push(top["pageid"])
+                      modal.find('.modal-body p').html(list)
+
+                        
+                  else
+                      name = data["suggestion"]["title"]
+                      summary = data["suggestion"]["summary"]
+                      if "dist" of data["suggestion"]
+                        distance = ", distance #{data["suggestion"]["dist"]} m"
+                      else
+                        distance = " "
+
+                      modal.data("pageid", data["suggestion"]["pageid"])
+                      #modal.find('.modal-header').html($(".vote_buttons"))
+                      modal.find('.modal-body p').html("<span id='modal_images'></span><h4 <em>#{name}</em>#{distance}</h4>
+                                                        <p>#{summary}</p>")
+                      image_html = ""
+                      for image_url in data["image_urls"]
+                        if not image_url.endsWith('.svg')
+                            image_html += "<img height='120pt' src='#{image_url}'/>"
+                      $("#modal_images").html(image_html)
               else
                   modal.find('.modal-body p').html("<p>#{data["message"]}</p>")
                   
@@ -217,7 +249,7 @@ $ ->
     $('#go').on 'click', (e) ->
         modal = $(document).data('modal')
         pageid = modal.data('pageid')
-        vote(pageid, +1)
+        vote(pageid, +3)
         # ajax call to upvote
         # retrieve directions
         # display directions
