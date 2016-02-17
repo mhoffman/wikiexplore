@@ -167,7 +167,7 @@ $ ->
                             pageid = e["toElement"]["dataset"]["pageid"]
                             $(document).data('modal_pageid', pageid)
                             ignored_pageids = eval(e["toElement"]["dataset"]["aboveitems"])
-                            vote(pageid, +3)
+                            vote(pageid, +12)
                             console.log("Upvoted #{pageid}")
 
                             console.log("Skip items")
@@ -181,6 +181,7 @@ $ ->
                             
                         listed_ids.push(top["pageid"])
                       modal.find('.modal-body p').html(list)
+                      $(".vote_buttons").hide()
 
                         
                   else
@@ -200,8 +201,10 @@ $ ->
                         if not image_url.endsWith('.svg')
                             image_html += "<img height='120pt' src='#{image_url}'/>"
                       $("#modal_images").html(image_html)
+                      $(".vote_buttons").show()
               else
                   modal.find('.modal-body p').html("<p>#{data["message"]}</p>")
+                  $(".vote_buttons").hide()
                   
                     
 
@@ -217,7 +220,7 @@ $ ->
     $("#dontcare").on 'click', (e) ->
         modal = $(document).data('modal')
         pageid = modal.data('pageid')
-        vote(pageid, -1)
+        vote(pageid, -3)
         # ajax call to downvote
         $("#target_suggestion").modal("show")
         console.log("dontcare #{pageid}")
@@ -240,7 +243,7 @@ $ ->
     $("#like").on 'click', (e) ->
         modal = $(document).data('modal')
         pageid = modal.data('pageid')
-        vote(pageid, +1)
+        vote(pageid, +5)
         console.log("like #{pageid}")
         lang = (window.navigator.userLanguage || window.navigator.language).split('-')[0]
         window.open("http://#{lang}.wikipedia.org/?curid=#{pageid}", '_blank')

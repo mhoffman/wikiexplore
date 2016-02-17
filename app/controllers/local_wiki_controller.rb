@@ -13,10 +13,12 @@ end
 class LocalWikiController < ApplicationController
   skip_before_filter :verify_authenticity_token
   def reset_suggestions
-    current_user.propensities.delete_all()
-    current_user.disliked_articles.delete_all()
+    current_user.propensities.delete_all
+    current_user.disliked_articles.delete_all
 
-    render :json => {}
+    render :json => {
+        :message => "success",
+        }
   end
 
   def search
