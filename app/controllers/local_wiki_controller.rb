@@ -148,6 +148,7 @@ class LocalWikiController < ApplicationController
           ranked_data = ranked_data.sort_by {|obj| obj["ranked_dist"]}
 
           suggestion = ranked_data[skip]
+          skip = 0
           top5 = ranked_data[skip..skip+9]
           if suggestion.nil? then
             render :json => {
