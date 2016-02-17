@@ -29,6 +29,11 @@ $ ->
             center: center
             rotation: rotation
 
+    vectorSource = new ol.source.Vector()
+    vectorLayer = new ol.layer.Vector
+      source: vectorSource
+    map.addLayer(vectorLayer)
+
     shouldUpdate = true
     view = map.getView()
 
@@ -52,20 +57,25 @@ $ ->
                 for wiki_entry in data.data
                     do (wiki_entry) ->
                         center = ol.proj.fromLonLat([wiki_entry.lon, wiki_entry.lat])
-                        #console.log(wiki_entry)
+                        console.log(wiki_entry)
                         lang = window.navigator.userLanguage || window.navigator.language
                         lang = lang.split('-')[0]
                         #console.log(lang)
                         url = "http://#{lang}.wikipedia.org/?curid=#{wiki_entry.pageid}"
-                        element = $("<div style=\"background-color:rgba(.1, .1, .1, .5);opacity:.6;\"><p style=\"max-width:80px; word-wrap:break-word; line-height:80%; font-size:8pt; \"><a class=\"map-link\" target=\"_new\" href=\"#\" style='' data-pageid=\"#{wiki_entry.pageid}\">#{wiki_entry.title}</a></p></div>")
+                        element = $("<div style=\"background-color:rgba(.1, .1, .1, .5);opacity:.6;\"><p style=\"max-width:80px; word-wrap:break-word; line-height:80%; font-size:6pt; \"><a class=\"map-link\" target=\"_new\" href=\"#\" style='' data-lon=\"#{wiki_entry.lon}\" data-lat=\"#{wiki_entry.lat}\" data-pageid=\"#{wiki_entry.pageid}\">#{wiki_entry.title}</a></p></div>")
                         overlay = new ol.Overlay
                             position: center
                             stopEvent: true
                             element: element[0]
                         element.on "click", (e)  ->
                             pageid = e["toElement"]["dataset"]["pageid"]
+                            coords = [e["toElement"]["dataset"]["lon"], e["toElement"]["dataset"]["lat"]]
+                            console.log("MAP-LINK-EVENT")
+                            console.log(e)
                             $(document).data('modal_pageid', pageid)
+                            $(document).data('modal_coords', "[#{coords[0]}, #{coords[1]}]")
                             console.log(pageid)
+                            console.log(e)
                             vote(pageid, +1)
                             e.preventDefault()
                             $("#target_suggestion").modal("show")
@@ -138,7 +148,7 @@ $ ->
 
       if parseInt($(document).data('modal_pageid')) > 0
         pageid = $(document).data('modal_pageid')
-        $(document).removeData("modal_pageid")
+        $(document).removeData('modal_pageid')
       else
         pageid = 0
       $.ajax
@@ -166,6 +176,12 @@ $ ->
                         list_elem.on 'click', (e) ->
                             pageid = e["toElement"]["dataset"]["pageid"]
                             $(document).data('modal_pageid', pageid)
+                            coords = [e["toElement"]["dataset"]["lon"], e["toElement"]["dataset"]["lat"]]
+                            console.log("EVENT")
+                            console.log(e)
+                            console.log("TOP")
+                            console.log(top)
+                            $(document).data('modal_coords', "[#{top["lon"]}, #{top["lat"]}]")
                             ignored_pageids = eval(e["toElement"]["dataset"]["aboveitems"])
                             vote(pageid, +12)
                             console.log("Upvoted #{pageid}")
@@ -192,7 +208,7 @@ $ ->
                       else
                         distance = " "
 
-                      modal.data("pageid", data["suggestion"]["pageid"])
+                      modal.data('pageid', data["suggestion"]["pageid"])
                       #modal.find('.modal-header').html($(".vote_buttons"))
                       modal.find('.modal-body p').html("<span id='modal_images'></span><h4 <em>#{name}</em>#{distance}</h4>
                                                         <p>#{summary}</p>")
@@ -258,8 +274,29 @@ $ ->
         # display directions
         lang = (window.navigator.userLanguage || window.navigator.language).split('-')[0]
         #window.open("http://#{lang}.wikipedia.org/?curid=#{pageid}", '_blank')
-        modal.find('.modal-body p').html("This button will show direction to the place. Not implemented, yet.")
         console.log("go to #{pageid}")
+        to_coords = eval($(document).data('modal_coords'))
+        from_coords =  ol.proj.toLonLat(view.getCenter())
+        console.log("FROM")
+        console.log(from_coords)
+        console.log("TO")
+        console.log(to_coords)
+        $.ajax
+            type: 'POST'
+            url: "#{window.location.protocol}//#{window.location.host}/localwikiroute"
+            data:
+                from_coords: from_coords
+                to_coords: to_coords
+            success: (data, textStatus, jqXHR) ->
+                console.log(data)
+                route = new ol.format.Polyline
+                            factor: 1e6
+                        .readGeometry data["data"]["route_geometry"],
+                            dataProjection: 'EPSG:4326'
+                            featureProjection: 'EPSG:3857'
+                feature = new ol.Feature(route)
+                $("#target_suggestion").modal("hide")
+                vectorSource.addFeature(feature)
         console.log(e)
         
     $('#bookmark').on 'click', (e) ->

@@ -12,6 +12,7 @@ end
 
 class LocalWikiController < ApplicationController
   skip_before_filter :verify_authenticity_token
+
   def reset_suggestions
     current_user.propensities.delete_all
     current_user.disliked_articles.delete_all
@@ -19,6 +20,17 @@ class LocalWikiController < ApplicationController
     render :json => {
         :message => "success",
         }
+  end
+
+  def route
+      from_coords = params[:from_coords]
+      to_coords = params[:to_coords]
+      client = HTTPClient.new
+      lon1, lat1 = from_coords
+      lon2, lat2 = to_coords
+      render :json => {
+        :data => JSON.parse(client.get_content("http://router.project-osrm.org/viaroute?loc=#{lat1},#{lon1}&loc=#{lat2},#{lon2}"))
+      }
   end
 
   def search
@@ -257,6 +269,7 @@ class LocalWikiController < ApplicationController
   end
 
   private
+
 
   def get_info(pageid, lang)
       client = HTTPClient.new
