@@ -57,7 +57,7 @@ $ ->
                 for wiki_entry in data.data
                     do (wiki_entry) ->
                         center = ol.proj.fromLonLat([wiki_entry.lon, wiki_entry.lat])
-                        console.log(wiki_entry)
+                        #console.log(wiki_entry)
                         lang = window.navigator.userLanguage || window.navigator.language
                         lang = lang.split('-')[0]
                         #console.log(lang)
@@ -70,13 +70,13 @@ $ ->
                         element.on "click", (e)  ->
                             pageid = e["toElement"]["dataset"]["pageid"]
                             coords = [e["toElement"]["dataset"]["lon"], e["toElement"]["dataset"]["lat"]]
-                            console.log("MAP-LINK-EVENT")
-                            console.log(e)
+                            #console.log("MAP-LINK-EVENT")
+                            #console.log(e)
                             $(document).data('modal_pageid', pageid)
                             $(document).data('modal_coords', "[#{coords[0]}, #{coords[1]}]")
-                            console.log(pageid)
-                            console.log(e)
-                            vote(pageid, +1)
+                            #console.log(pageid)
+                            #console.log(e)
+                            vote(pageid, +5)
                             e.preventDefault()
                             $("#target_suggestion").modal("show")
 
@@ -118,8 +118,8 @@ $ ->
             data: $("#lookup_form").serialize()
 
             success : (data) ->
-                console.log("Received #{data}")
-                console.log(data)
+                #console.log("Received #{data}")
+                #console.log(data)
                 center = [parseFloat(data["lonlat"][0]), parseFloat(data["lonlat"][1])]
                 #console.log(data["lonlat"])
                 #console.log(center)
@@ -136,12 +136,12 @@ $ ->
       #// If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
       #// Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
       modal = $(@)
-      console.log("LOG SKIP")
-      console.log(modal.data('skip'))
-      console.log(modal.data('skip')?)
+      #console.log("LOG SKIP")
+      #console.log(modal.data('skip'))
+      #console.log(modal.data('skip')?)
       if ! modal.data('skip')?
         modal.data('skip', 0)
-      console.log(modal.data('skip'))
+      #console.log(modal.data('skip'))
       $(document).data('modal', modal)
       coords = ol.proj.toLonLat(view.getCenter())
       show_spinner(modal.find('.modal-body p'))
@@ -149,6 +149,7 @@ $ ->
       if parseInt($(document).data('modal_pageid')) > 0
         pageid = $(document).data('modal_pageid')
         $(document).removeData('modal_pageid')
+        modal.data('pageid', pageid)
       else
         pageid = 0
       $.ajax
@@ -167,7 +168,7 @@ $ ->
                       listed_ids = []
                       for top in data["top5"]
                         list_elem = $("<li class='list-group-item'><a class=\"topx_link\" href=\"#\" data-aboveitems=\"[#{listed_ids}]\" data-pageid=\"#{top["pageid"]}\">#{top["title"]}</a></li>")
-                        console.log(listed_ids)
+                        #console.log(listed_ids)
                         list.append(list_elem)
                         #if "ranked_dist" of top
                             #list_elem.append($("<span class='badge'>#{top["ranked_dist"]}</span>"))
@@ -177,20 +178,20 @@ $ ->
                             pageid = e["toElement"]["dataset"]["pageid"]
                             $(document).data('modal_pageid', pageid)
                             coords = [e["toElement"]["dataset"]["lon"], e["toElement"]["dataset"]["lat"]]
-                            console.log("EVENT")
-                            console.log(e)
-                            console.log("TOP")
-                            console.log(top)
+                            #console.log("EVENT")
+                            #console.log(e)
+                            #console.log("TOP")
+                            #console.log(top)
                             $(document).data('modal_coords', "[#{top["lon"]}, #{top["lat"]}]")
                             ignored_pageids = eval(e["toElement"]["dataset"]["aboveitems"])
-                            vote(pageid, +12)
-                            console.log("Upvoted #{pageid}")
+                            vote(pageid, +3)
+                            #console.log("Upvoted #{pageid}")
 
-                            console.log("Skip items")
-                            console.log(ignored_pageids)
+                            #console.log("Skip items")
+                            #console.log(ignored_pageids)
                             for ignored_pageid in ignored_pageids
                                 vote(ignored_pageid, -1)
-                                console.log("Downvoted #{ignored_pageid}")
+                                #console.log("Downvoted #{ignored_pageid}")
                             e.preventDefault()
                             $("#target_suggestion").modal("show")
 
@@ -221,10 +222,8 @@ $ ->
               else
                   modal.find('.modal-body p').html("<p>#{data["message"]}</p>")
                   $(".vote_buttons").hide()
-                  
-                    
 
-              console.log(data)
+              #console.log(data)
           fail: (data, textStatus, jqXHR) ->
               modal.find('.modal-body p').html("Couldn't load suggestion!" + textStatus)
     
@@ -239,31 +238,31 @@ $ ->
         vote(pageid, -3)
         # ajax call to downvote
         $("#target_suggestion").modal("show")
-        console.log("dontcare #{pageid}")
-        console.log(e)
+        #console.log("dontcare #{pageid}")
+        #console.log(e)
         
     $("#morelikethat").on 'click', (e) ->
         modal = $(document).data('modal')
         pageid = modal.data('pageid')
         # ajax call to upvote
-        console.log(modal.data('skip'))
+        #console.log(modal.data('skip'))
         modal.data('skip', modal.data('skip') + 1)
-        console.log(modal.data('skip'))
+        #console.log(modal.data('skip'))
         vote(pageid, +1)
         # close suggestion
         # open new suggestion
         $("#target_suggestion").modal("show")
-        console.log("morelikethat #{pageid}")
-        console.log(e)
+        #console.log("morelikethat #{pageid}")
+        #console.log(e)
         
     $("#like").on 'click', (e) ->
         modal = $(document).data('modal')
         pageid = modal.data('pageid')
-        vote(pageid, +5)
-        console.log("like #{pageid}")
+        vote(pageid, +2)
+        #console.log("like #{pageid}")
         lang = (window.navigator.userLanguage || window.navigator.language).split('-')[0]
         window.open("http://#{lang}.wikipedia.org/?curid=#{pageid}", '_blank')
-        console.log(e)
+        #console.log(e)
         
     $('#go').on 'click', (e) ->
         modal = $(document).data('modal')
@@ -274,13 +273,13 @@ $ ->
         # display directions
         lang = (window.navigator.userLanguage || window.navigator.language).split('-')[0]
         #window.open("http://#{lang}.wikipedia.org/?curid=#{pageid}", '_blank')
-        console.log("go to #{pageid}")
+        #console.log("go to #{pageid}")
         to_coords = eval($(document).data('modal_coords'))
         from_coords =  ol.proj.toLonLat(view.getCenter())
-        console.log("FROM")
-        console.log(from_coords)
-        console.log("TO")
-        console.log(to_coords)
+        #console.log("FROM")
+        #console.log(from_coords)
+        #console.log("TO")
+        #console.log(to_coords)
         $.ajax
             type: 'POST'
             url: "#{window.location.protocol}//#{window.location.host}/localwikiroute"
@@ -288,7 +287,7 @@ $ ->
                 from_coords: from_coords
                 to_coords: to_coords
             success: (data, textStatus, jqXHR) ->
-                console.log(data)
+                #console.log(data)
                 route = new ol.format.Polyline
                             factor: 1e6
                         .readGeometry data["data"]["route_geometry"],
@@ -297,7 +296,7 @@ $ ->
                 feature = new ol.Feature(route)
                 $("#target_suggestion").modal("hide")
                 vectorSource.addFeature(feature)
-        console.log(e)
+        #console.log(e)
         
     $('#bookmark').on 'click', (e) ->
         modal = $(document).data('modal')
@@ -309,15 +308,15 @@ $ ->
         lang = (window.navigator.userLanguage || window.navigator.language).split('-')[0]
         #window.open("http://#{lang}.wikipedia.org/?curid=#{pageid}", '_blank')
         modal.find('.modal-body p').html("This button will show direction to the place. Not implemented, yet.")
-        console.log("go to #{pageid}")
-        console.log(e)
+        #console.log("go to #{pageid}")
+        #console.log(e)
         
 
     show_spinner = (obj) ->
         obj.html("<span id='load_indicator'><img src=\"<%= asset_path('spinner.gif') %>\"></span>")
 
     vote = (pageid, score) ->
-        console.log("#{pageid} => #{score}")
+        #console.log("#{pageid} => #{score}")
         $.ajax
             type: 'POST'
             url: "#{window.location.protocol}//#{window.location.host}/localwikivote"
@@ -327,8 +326,8 @@ $ ->
                 lang: (window.navigator.userLanguage || window.navigator.language).split('-')[0]
 
             success: (data, textStatus, jqXHR) ->
-                console.log("Vote LOG")
-                console.log(data)
+                #console.log("Vote LOG")
+                #console.log(data)
 
     $("#center-home").click()
     # keep it around for debugging

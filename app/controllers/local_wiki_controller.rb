@@ -134,13 +134,14 @@ class LocalWikiController < ApplicationController
               category_list = categories[pageid.to_s]
               if not category_list["categories"].nil? then
                   category_list["categories"].each do |category_name|
-                      ranked_data_item["debug"] = category_name["title"]
-                      category = Category.find_by(:name=>category_name["title"])
+                      category_title = clean_category(category_name["title"])
+                      ranked_data_item["debug"] = category_title
+                      category = Category.find_by(:name=>category_title)
                       if not category.nil? then
                           ranked_data_item[category.name] = category.id
                           propensity = Propensity.find_by(:category_id=>category.id, :user_id=>current_user.id)
                           if not propensity.nil? then
-                              ranked_data_item["Category #{category_name["title"]} #{category.id} User #{current_user.id}"] = propensity.value
+                              ranked_data_item["Category #{category_title} #{category.id} User #{current_user.id}"] = propensity.value
                               # higher propensity means that the target appear closer
                               # therefore we need a negative sign here
                               ranked_data_item["ranked_dist"] += - propensity.value * 500
@@ -156,11 +157,11 @@ class LocalWikiController < ApplicationController
           dla = ArticleDislike.where(:user_id=>current_user.id)
           disliked_articles = ArticleDislike.where(:user_id=>current_user.id).map{|x| x.article_id}
 
-          ranked_data = ranked_data.select{|x| disliked_articles.exclude?(x["pageid"])}
+          #ranked_data = ranked_data.select{|x| disliked_articles.exclude?(x["pageid"])}
           ranked_data = ranked_data.sort_by {|obj| obj["ranked_dist"]}
 
-          suggestion = ranked_data[skip]
           skip = 0
+          suggestion = ranked_data[skip]
           top5 = ranked_data[skip..skip+9]
           if suggestion.nil? then
             render :json => {
@@ -246,7 +247,7 @@ class LocalWikiController < ApplicationController
     # for each category, create if doesn't yet exist in db
     categories = []
     categories_data.each do |item|
-      category = Category.find_or_create_by(:name=>item["title"])
+      category = Category.find_or_create_by(:name=>clean_category(item["title"]))
       categories.append(category)
     end
 
@@ -269,6 +270,14 @@ class LocalWikiController < ApplicationController
   end
 
   private
+
+  def clean_category(category)
+    return category.split(":")[-1].strip().split(" in ")[0]
+  end
+
+  def clean_categories(categories)
+    return categories.map{|x| clean_category(x) }
+  end
 
 
   def get_info(pageid, lang)
