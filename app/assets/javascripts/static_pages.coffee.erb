@@ -173,7 +173,22 @@ $ ->
                         #if "ranked_dist" of top
                             #list_elem.append($("<span class='badge'>#{top["ranked_dist"]}</span>"))
                         if "propensity" of top
-                            list_elem.append($("<span class='badge'>#{top["propensity"]}</span>"))
+                            #list_elem.append($("<button type='button' class='btn btn-default' data-toggle='tooltip' data-placement='right' title='Tooltip on right'>#{top["propensity"]}</button>"))
+                            list_elem.attr("data-placement", "right")
+                            list_elem.attr("title", top["propensity"])
+                            list_elem.tooltip()
+
+                        downvote_elem = $("<a href='#' class='.downvote' data-pageid='#{top["pageid"]}' style='float:right'>")
+                        downvote_elem.append($("<span class='glyphicon glyphicon-remove-sign' data-pageid='#{top["pageid"]}'>"))
+                        downvote_elem.on 'click', (e) ->
+                            pageid = e["toElement"]["dataset"]["pageid"]
+                            vote(pageid, -1)
+                            console.log(e)
+                            console.log(pageid)
+                            $("#target_suggestion").modal("show")
+                            e.preventDefault()
+                        list_elem.append(downvote_elem)
+
                         list_elem.on 'click', (e) ->
                             pageid = e["toElement"]["dataset"]["pageid"]
                             $(document).data('modal_pageid', pageid)
@@ -195,12 +210,12 @@ $ ->
                             e.preventDefault()
                             $("#target_suggestion").modal("show")
 
-                            
+
                         listed_ids.push(top["pageid"])
                       modal.find('.modal-body p').html(list)
                       $(".vote_buttons").hide()
 
-                        
+
                   else
                       name = data["suggestion"]["title"]
                       summary = data["suggestion"]["summary"]
@@ -226,7 +241,7 @@ $ ->
               #console.log(data)
           fail: (data, textStatus, jqXHR) ->
               modal.find('.modal-body p').html("Couldn't load suggestion!" + textStatus)
-    
+
     $("#reset_suggestions").on 'click', (e) ->
         $.ajax
             type: 'POST'
@@ -240,7 +255,7 @@ $ ->
         $("#target_suggestion").modal("show")
         #console.log("dontcare #{pageid}")
         #console.log(e)
-        
+
     $("#morelikethat").on 'click', (e) ->
         modal = $(document).data('modal')
         pageid = modal.data('pageid')
@@ -254,7 +269,7 @@ $ ->
         $("#target_suggestion").modal("show")
         #console.log("morelikethat #{pageid}")
         #console.log(e)
-        
+
     $("#like").on 'click', (e) ->
         modal = $(document).data('modal')
         pageid = modal.data('pageid')
@@ -263,7 +278,7 @@ $ ->
         lang = (window.navigator.userLanguage || window.navigator.language).split('-')[0]
         window.open("http://#{lang}.wikipedia.org/?curid=#{pageid}", '_blank')
         #console.log(e)
-        
+
     $('#go').on 'click', (e) ->
         modal = $(document).data('modal')
         pageid = modal.data('pageid')
@@ -297,7 +312,7 @@ $ ->
                 $("#target_suggestion").modal("hide")
                 vectorSource.addFeature(feature)
         #console.log(e)
-        
+
     $('#bookmark').on 'click', (e) ->
         modal = $(document).data('modal')
         pageid = modal.data('pageid')
@@ -310,7 +325,7 @@ $ ->
         modal.find('.modal-body p').html("This button will show direction to the place. Not implemented, yet.")
         #console.log("go to #{pageid}")
         #console.log(e)
-        
+
 
     show_spinner = (obj) ->
         obj.html("<span id='load_indicator'><img src=\"<%= asset_path('spinner.gif') %>\"></span>")
