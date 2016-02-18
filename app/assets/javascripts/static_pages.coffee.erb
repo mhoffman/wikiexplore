@@ -32,6 +32,10 @@ $ ->
     vectorSource = new ol.source.Vector()
     vectorLayer = new ol.layer.Vector
       source: vectorSource
+      style: new ol.style.Style
+        stroke: new ol.style.Stroke
+            width: 3
+            color: color: [0, 153, 255, 1]
     map.addLayer(vectorLayer)
 
     shouldUpdate = true
