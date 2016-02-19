@@ -3,12 +3,12 @@
     .input-group-btn
       %button.btn.btn-default.btn-md.btn-primary{:type=>"button", :"data-toggle"=>"modal", :"data-target"=>"#target_suggestion"}
         %span.glyphicon.glyphicon-road
-          Make an educated guess ...
+        Make an educated guess ...
     %input.form-control{:type=>"text", :name=>"query", :placeholder=>"Go to places"} 
     .input-group-btn
       %button.btn.btn-default.btn-md#center-home{:type=>"button"}
         %span.glyphicon.glyphicon-record
-          Center
+        Center
 
 .div{:style=>"height:10px"}
 
@@ -19,7 +19,7 @@
 .input-group
   %button.btn.btn-default.btn-md#reset_suggestions{:type=>"button"}
     %span.glyphicon.glyphicon-remove-sign
-      Reset suggestions
+    Reset suggestions
 
 .modal.fade#target_suggestion{:tabindex=>"-1",:role=>"dialog",:"aria-labelledby"=>"target_suggestion_label"}
   .modal-dialog{:role=>"document"}
@@ -41,13 +41,13 @@
           .input-group-btn.vote_buttons
             %button#dontcare.btn.btn-default.btn-md{:type=>"button", }
               %span.glyphicon.glyphicon-thumbs-down
-                Don't care.
+              Don't care.
             %button#morelikethat.btn.btn-default.btn-md{:type=>"button", }
               %span.glyphicon.glyphicon-thumbs-up
-                More like that.
+              More like that.
             %button#like.btn.btn-default.btn-md{:type=>"button", }
               %span.glyphicon.glyphicon-arrow-down
-                Full info.
+              Full info.
             %button#go.btn.btn-default.btn-md.btn-primary{:type=>"button", }
               %span.glyphicon.glyphicon-map-marker
-                Directions.
+              Directions.
