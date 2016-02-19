@@ -8,6 +8,8 @@ class ApplicationController < ActionController::Base
   end
 
   def current_user
+    session[:foo] = "bar"
+    cookies[:foobar] = "baz"
     super || AnonymousUser.find_or_initialize_by(id: anonymous_user_token) do |user|
         user.save(validate: false) if user.new_record?
     end
@@ -21,6 +23,7 @@ class ApplicationController < ActionController::Base
 
 
   def anonymous_user_token
-    session[:user_token] ||= SecureRandom.hex()
+    #session[:user_token] ||= cookies[:user_token] ||= SecureRandom.hex()
+    session[:user_token] ||=  SecureRandom.hex()
   end
 end
