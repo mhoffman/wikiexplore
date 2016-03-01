@@ -169,6 +169,9 @@ $ ->
               velocity: $(document).data('velocity')
           success: (data, textStatus, jqXHR) ->
               #$("#load_indicator").remove()
+              velocity = $(document).data('velocity')
+              $(".velocity").removeClass("btn-primary")
+              $("##{velocity}").addClass("btn-primary")
               if data["message"] == 'success'
                   if data["top5"] != null
                       list = $("<ul class='list-group'>")
@@ -184,6 +187,7 @@ $ ->
                             #list_elem.append($("<button type='button' class='btn btn-default' data-toggle='tooltip' data-placement='left' title='Tooltip on right'>#{top["propensity"]}</button>"))
                             list_elem.attr("data-placement", "below")
                             list_elem.attr("title", top["propensity"])
+                            #list_elem.attr("title", top["ranked_dist"])
                             list_elem.tooltip()
 
                         downvote_elem = $("<a href='#' class='.downvote' data-pageid='#{top["pageid"]}' style='float:right'>")
@@ -287,16 +291,13 @@ $ ->
         window.open("http://#{lang}.wikipedia.org/?curid=#{pageid}", '_blank')
         #console.log(e)
 
-    $('#walk').on 'click', (e) ->
-        $(document).data('velocity', 5)
-        $("#target_suggestion").modal("show")
-
-    $('#bike').on 'click', (e) ->
-        $(document).data('velocity', 15)
-        $("#target_suggestion").modal("show")
-
-    $('#drive').on 'click', (e) ->
-        $(document).data('velocity', 50)
+    $('.velocity').on 'click', (e) ->
+        velocity = e["toElement"]["id"]
+        console.log($(document).data('velocity'))
+        $(document).data('velocity', velocity)
+        console.log($(document).data('velocity'))
+        $(".velocity").removeClass("btn-primary")
+        $("##{velocity}").addClass("btn-primary")
         $("#target_suggestion").modal("show")
 
     $('#go').on 'click', (e) ->

@@ -106,10 +106,7 @@ class LocalWikiController < ApplicationController
       lang = params[:lang]
       skip = params[:skip].to_i
       pageid = params[:pageid].to_i
-      velocity = params[:velocity].to_i
-      if velocity == 0 then
-        velocity = 15
-      end
+      velocity = {"walk"=>5, "bike"=>15, "drive"=> 50}[params[:velocity]] || 20 
 
 
       if pageid == 0 then
@@ -149,7 +146,7 @@ class LocalWikiController < ApplicationController
                               ranked_data_item["Category #{category_title} #{category.id} User #{current_user.id}"] = propensity.value
                               # higher propensity means that the target appear closer
                               # therefore we need a negative sign here
-                              ranked_data_item["ranked_dist"] += - propensity.value * 300 * velocity
+                              ranked_data_item["ranked_dist"] += - propensity.value * 50 * velocity
                               ranked_data_item["propensity"] +=  propensity.value
                           else
                               #ranked_data_item["propensity"] = "nil"
@@ -220,6 +217,8 @@ class LocalWikiController < ApplicationController
           :skip => skip,
           :debug => debug,
           :top5 => top5,
+          :params => params,
+          :velocity => velocity,
       }
 
       # process liked and unliked categories
