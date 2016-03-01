@@ -29,7 +29,20 @@
           &times;
         %h4
           %span#modal_body_top
-            How about ...
+            .input-group
+              .input-group-btn
+                %button#walk.btn.btn-default.btn-md{:type=>"button", }
+                  %i.material-icons
+                    directions_walk
+                  Walk
+                %button#bike.btn.btn-default.btn-md{:type=>"button", }
+                  %i.material-icons
+                    directions_bike
+                  Bike
+                %button#drive.btn.btn-default.btn-md{:type=>"button", }
+                  %i.material-icons
+                    directions_car
+                  Drive
 
       .modal-body
 

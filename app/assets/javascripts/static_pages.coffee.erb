@@ -166,6 +166,7 @@ $ ->
               lang: (window.navigator.userLanguage || window.navigator.language).split('-')[0]
               skip: modal.data('skip')
               pageid: pageid
+              velocity: $(document).data('velocity')
           success: (data, textStatus, jqXHR) ->
               #$("#load_indicator").remove()
               if data["message"] == 'success'
@@ -173,6 +174,7 @@ $ ->
                       list = $("<ul class='list-group'>")
                       listed_ids = []
                       for top in data["top5"]
+                        console.log(top)
                         list_elem = $("<li class='list-group-item'><a class=\"topx_link\" href=\"#\" data-aboveitems=\"[#{listed_ids}]\" data-pageid=\"#{top["pageid"]}\">#{top["title"]}</a></li>")
                         #console.log(listed_ids)
                         list.append(list_elem)
@@ -180,7 +182,7 @@ $ ->
                             #list_elem.append($("<span class='badge'>#{top["ranked_dist"]}</span>"))
                         if "propensity" of top
                             #list_elem.append($("<button type='button' class='btn btn-default' data-toggle='tooltip' data-placement='left' title='Tooltip on right'>#{top["propensity"]}</button>"))
-                            list_elem.attr("data-placement", "right")
+                            list_elem.attr("data-placement", "below")
                             list_elem.attr("title", top["propensity"])
                             list_elem.tooltip()
 
@@ -284,6 +286,18 @@ $ ->
         lang = (window.navigator.userLanguage || window.navigator.language).split('-')[0]
         window.open("http://#{lang}.wikipedia.org/?curid=#{pageid}", '_blank')
         #console.log(e)
+
+    $('#walk').on 'click', (e) ->
+        $(document).data('velocity', 5)
+        $("#target_suggestion").modal("show")
+
+    $('#bike').on 'click', (e) ->
+        $(document).data('velocity', 15)
+        $("#target_suggestion").modal("show")
+
+    $('#drive').on 'click', (e) ->
+        $(document).data('velocity', 50)
+        $("#target_suggestion").modal("show")
 
     $('#go').on 'click', (e) ->
         modal = $(document).data('modal')
