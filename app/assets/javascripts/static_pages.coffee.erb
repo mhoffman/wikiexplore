@@ -179,7 +179,7 @@ $ ->
                         #if "ranked_dist" of top
                             #list_elem.append($("<span class='badge'>#{top["ranked_dist"]}</span>"))
                         if "propensity" of top
-                            #list_elem.append($("<button type='button' class='btn btn-default' data-toggle='tooltip' data-placement='right' title='Tooltip on right'>#{top["propensity"]}</button>"))
+                            #list_elem.append($("<button type='button' class='btn btn-default' data-toggle='tooltip' data-placement='left' title='Tooltip on right'>#{top["propensity"]}</button>"))
                             list_elem.attr("data-placement", "right")
                             list_elem.attr("title", top["propensity"])
                             list_elem.tooltip()
