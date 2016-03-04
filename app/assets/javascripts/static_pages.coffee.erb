@@ -183,12 +183,12 @@ $ ->
                         list.append(list_elem)
                         #if "ranked_dist" of top
                             #list_elem.append($("<span class='badge'>#{top["ranked_dist"]}</span>"))
-                        if "propensity" of top
-                            #list_elem.append($("<button type='button' class='btn btn-default' data-toggle='tooltip' data-placement='left' title='Tooltip on right'>#{top["propensity"]}</button>"))
-                            list_elem.attr("data-placement", "below")
-                            list_elem.attr("title", top["propensity"])
-                            #list_elem.attr("title", top["ranked_dist"])
-                            list_elem.tooltip()
+                        #if "propensity" of top
+                            ##list_elem.append($("<button type='button' class='btn btn-default' data-toggle='tooltip' data-placement='left' title='Tooltip on right'>#{top["propensity"]}</button>"))
+                            #list_elem.attr("data-placement", "below")
+                            #list_elem.attr("title", top["propensity"])
+                            ##list_elem.attr("title", top["ranked_dist"])
+                            #list_elem.tooltip()
 
                         downvote_elem = $("<a href='#' class='.downvote' data-pageid='#{top["pageid"]}' style='float:right'>")
                         downvote_elem.append($("<span class='glyphicon glyphicon-remove-sign' data-pageid='#{top["pageid"]}'>"))
@@ -365,7 +365,7 @@ $ ->
                 #console.log("Vote LOG")
                 #console.log(data)
 
-    $("#center-home").click()
+    #$("#center-home").click()
     # keep it around for debugging
     $(document).data('view', view)
     $(document).data('map', map)
