@@ -12,12 +12,13 @@
   %body
     = render 'layouts/header'
     .container
-      - flash.each do |message_type, message|
-        = content_tag(:div, message, class: "alert alert-#{message_type}")
-      %p.notice
-        = notice
-      %p.alert
-        = alert
+      .flash-messages
+        - flash.each do |message_type, message|
+          = content_tag(:div, message, class: "alert alert-#{message_type}")
+      /%p.notice
+      /  = notice
+      /%p.alert
+      /  = alert
       = yield
       = javascript_include_tag 'application', 'data-turbolinks-track' => true
       = render 'layouts/footer'

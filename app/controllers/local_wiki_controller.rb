@@ -34,6 +34,12 @@ class LocalWikiController < ApplicationController
   end
 
   def search
+        flash = {}
+        if ! cookies.permanent[:returning_visitor] then
+            flash[:info] = "New user? Click <a href=\"/help\".>here</a>"
+            cookies.permanent[:returning_visitor] = 1
+        end
+
         coords = params[:coords]
         lon, lat = coords.split(',')
         lang = params[:lang]
@@ -45,6 +51,7 @@ class LocalWikiController < ApplicationController
             :data => data,
             :status => :ok,
             :coords => coords,
+            :flash => flash,
         }
   end
 

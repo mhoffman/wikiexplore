@@ -57,6 +57,8 @@ $ ->
                 coords: "#{coords[1]},#{coords[0]}"
                 lang: (window.navigator.userLanguage || window.navigator.language).split('-')[0]
             success: (data, textStatus, jqXHR) ->
+                for message_type, message of data.flash
+                    $(".flash-messages").append("<div class='alert alert-#{message_type}'>#{message}</div>")
                 map.getOverlays().getArray().slice().forEach (overlay) ->
                     map.removeOverlay(overlay)
                     
