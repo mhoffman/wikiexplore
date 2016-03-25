@@ -22,7 +22,7 @@
     Reset suggestions
 
 .modal.fullscreen.fade#target_suggestion{:tabindex=>"-1",:role=>"dialog",:"aria-labelledby"=>"target_suggestion_label"}
-  .modal-dialog{:role=>"document"}
+  .modal-dialog.fullscreen{:role=>"document"}
     .modal-content
       .modal-header
         %button{:type=>"button",:class=>"close",:"data-dismiss"=>"modal",:"aria-label"=>"Close"}
@@ -43,10 +43,10 @@
                   %i.material-icons
                     directions_car
                   Drive
-                %button.btn.btn-default.btn-md{:type=>"button", :"data-toggle"=>"modal", :"data-target"=>"#target_suggestion"}
+                %button.btn.btn-default.btn-md{:type=>"button", :"data-target"=>"#target_suggestion"}
                   %i.material-icons
                     list
-                  Back
+                  List
 
 
       .modal-body
