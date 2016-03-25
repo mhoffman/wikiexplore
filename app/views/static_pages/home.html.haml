@@ -1,12 +1,12 @@
 %form{:id=>"lookup_form",:style=>"display:inline"}
   .input-group
     .input-group-btn
-      %button.btn.btn-default.btn-primary{:type=>"button", :"data-toggle"=>"modal", :"data-target"=>"#target_suggestion"}
+      %button.btn-lg.btn.btn-default.btn-primary{:type=>"button", :"data-toggle"=>"modal", :"data-target"=>"#target_suggestion"}
         %span.glyphicon.glyphicon-road
         Make an educated guess ...
     %input.form-control{:type=>"text", :name=>"query", :placeholder=>"Go to places"} 
     .input-group-btn
-      %button.btn.btn-default#center-home{:type=>"button"}
+      %button.btn-lg.btn.btn-default#center-home{:type=>"button"}
         %span.glyphicon.glyphicon-record
         Center
 
@@ -17,7 +17,7 @@
 .div{:style=>"height:10px"}
 
 .input-group
-  %button.btn.btn-default#reset_suggestions{:type=>"button"}
+  %button.btn-lg.btn.btn-default#reset_suggestions{:type=>"button"}
     %span.glyphicon.glyphicon-remove-sign
     Reset suggestions
 
@@ -31,19 +31,19 @@
           %span#modal_body_top
             .input-group
               .input-group-btn
-                %button.velocity#walk.btn.btn-default{:type=>"button", }
+                %button.velocity#walk.btn-lg.btn.btn-default{:type=>"button", }
                   %i.material-icons
                     directions_walk
                   Walk
-                %button.velocity#bike.btn.btn-default{:type=>"button", }
+                %button.velocity#bike.btn-lg.btn.btn-default{:type=>"button", }
                   %i.material-icons
                     directions_bike
                   Bike
-                %button.velocity#drive.btn.btn-default{:type=>"button", }
+                %button.velocity#drive.btn-lg.btn.btn-default{:type=>"button", }
                   %i.material-icons
                     directions_car
                   Drive
-                %button#reloadlist.btn.btn-default{:type=>"button"}
+                %button.velocity#bike.btn-lg.btn.btn-default{:type=>"button"}
                   %i.material-icons
                     list
                   List
@@ -57,16 +57,16 @@
       .modal-footer
         .input-group
           .input-group-btn.vote_buttons
-            %button#dontcare.btn.btn-default{:type=>"button", }
+            %button#dontcare.btn-lg.btn.btn-default{:type=>"button", }
               %span.glyphicon.glyphicon-thumbs-down
               Don't care.
-            %button#morelikethat.btn.btn-default{:type=>"button", }
+            %button#morelikethat.btn-lg.btn.btn-default{:type=>"button", }
               %span.glyphicon.glyphicon-thumbs-up
               More like that.
-            %button#like.btn.btn-default{:type=>"button", }
+            %button#like.btn-lg.btn.btn-default{:type=>"button", }
               %span.glyphicon.glyphicon-arrow-down
               Full info.
-            %button#go.btn.btn-default.btn-primary{:type=>"button", }
+            %button#go.btn-lg.btn.btn-default.btn-primary{:type=>"button", }
               %span.glyphicon.glyphicon-map-marker
               Directions.
 
