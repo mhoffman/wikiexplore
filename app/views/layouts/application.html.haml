@@ -11,7 +11,7 @@
     = render 'layouts/shim'
   %body
     = render 'layouts/header'
-    .container
+    .container.col-lg-12
       .flash-messages
         - flash.each do |message_type, message|
           = content_tag(:div, message, class: "alert alert-#{message_type}")
