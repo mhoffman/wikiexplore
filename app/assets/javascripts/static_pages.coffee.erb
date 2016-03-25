@@ -261,6 +261,10 @@ $ ->
             type: 'POST'
             url: "#{window.location.protocol}//#{window.location.host}/localwikiresetsuggestions"
 
+    $("#reloadlist").on 'click', (e) ->
+        $("#target_suggestion").modal("hide")
+        $("#target_suggestion").modal("show")
+        
     $("#dontcare").on 'click', (e) ->
         modal = $(document).data('modal')
         pageid = modal.data('pageid')
