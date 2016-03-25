@@ -9,6 +9,14 @@
     -box_sizing: border-box;
 }
 
+@media (max-width: $screen-sm) {
+    body{font-size: 1.5vmax;}
+}
+
+@media (max-width: $screen-md) {
+    body{font-size: 1.0vmax;}
+}
+
 .map {
 height: 80vh;
 width: 95vw;
